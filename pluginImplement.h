@@ -288,53 +288,8 @@ public:
 
     bool isPlugin(const char* name) override;
     void destroyPlugin();
-    //normalize layer
-    //std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mNormalizeLayer{ nullptr, nvPluginDeleter };
-    //permute layers
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv11_mbox_conf_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv11_mbox_loc_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv13_mbox_conf_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv13_mbox_loc_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv14_2_mbox_conf_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv14_2_mbox_loc_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv15_2_mbox_conf_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv15_2_mbox_loc_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv16_2_mbox_conf_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv16_2_mbox_loc_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv17_2_mbox_conf_perm_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv17_2_mbox_loc_perm_layer{ nullptr, nvPluginDeleter };
-    //priorbox layers
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv13_mbox_priorbox_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv14_2_mbox_priorbox_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv15_2_mbox_priorbox_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv16_2_mbox_priorbox_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv11_mbox_priorbox_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mConv17_2_mbox_priorbox_layer{ nullptr, nvPluginDeleter };
-    //detection output layer
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mDetection_out{ nullptr, nvPluginDeleter };
-    //concat layers
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mBox_loc_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mBox_conf_layer{ nullptr, nvPluginDeleter };
-    std::unique_ptr<INvPlugin, decltype(nvPluginDeleter)> mBox_priorbox_layer{ nullptr, nvPluginDeleter };
-    //reshape layer
-    std::unique_ptr<Reshape<5>> mMbox_conf_reshape{ nullptr };
-    //flatten layers
-    std::unique_ptr<FlattenLayer> mConv11_mbox_conf_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv13_mbox_conf_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv14_2_mbox_conf_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv15_2_mbox_conf_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv16_2_mbox_conf_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv17_2_mbox_conf_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv11_mbox_loc_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv13_mbox_loc_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv14_2_mbox_loc_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv15_2_mbox_loc_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv16_2_mbox_loc_flat_layer{ nullptr };
-    std::unique_ptr<FlattenLayer> mConv17_2_mbox_loc_flat_layer{ nullptr };
-    //softmax layer
-    std::unique_ptr<SoftmaxPlugin> mPluginSoftmax{ nullptr };
-    std::unique_ptr<FlattenLayer> mMbox_conf_flat_layer{ nullptr };
 
+#include "nbn/no_bn_iplugin.prototxt.HXX"
 
 };
 

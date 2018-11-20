@@ -9,7 +9,9 @@
 
 
 const char* model  = "../../model/MobileNetSSD_deploy_iplugin.prototxt";
-const char* weight = "../../model/MobileNetSSD_deploy.caffemodel";
+// const char* weight = "../../model/MobileNetSSD_deploy.caffemodel";
+// const char* image = "../../testPic/test.jpg";
+const char* weight = "../../nbn/no_bn.caffemodel";
 const char* image = "../../testPic/test.jpg";
 
 const char* INPUT_BLOB_NAME = "data";
@@ -104,16 +106,23 @@ static void jno_setup(int argc, char *argv[])
             weight = realpath(argv[++i], nullptr);
             std::cerr << "Weight: " << weight << std::endl;
         } else {
-            std::cerr << "Bad fag '" << argv[i] << "'." << std::endl;
+            std::cerr << "Bad flag '" << argv[i] << "'." << std::endl;
             exit(EXIT_FAILURE);
         }
     }
     char *p = strrchr(argv[0], '/'); *p = '\0'; chdir(argv[0]);
 }
 
+#define max(x,y) (((x) >= (y)) ? (x) : (y))
+#define min(x,y) (((x) <= (y)) ? (x) : (y))
+
 int main(int argc, char *argv[])
 {
     jno_setup(argc, argv);
+
+    std::cerr << "Image: " << image << std::endl;
+    std::cerr << "Model: " << model << std::endl;
+    std::cerr << "Weight: " << weight << std::endl;
 
     std::vector<std::string> output_vector = {OUTPUT_BLOB_NAME};
     TensorNet tensorNet;
@@ -165,19 +174,24 @@ int main(int argc, char *argv[])
     {
         if(output[7*k+1] == -1)
             break;
-        float classIndex = output[7*k+1];
-        float confidence = output[7*k+2];
-        float xmin = output[7*k + 3];
-        float ymin = output[7*k + 4];
-        float xmax = output[7*k + 5];
-        float ymax = output[7*k + 6];
-        std::cout << classIndex << ", " << confidence << "; "
-            << xmin << ", " << ymin<< ", " << xmax<< ", " << ymax
-            << std::endl;
+        float *out = &output[7*k];
+        float xz = out[0];
+        float klass = out[1];
+        float confd = out[2];
+        float xmin = min(out[3], out[5]);
+        float ymin = min(out[4], out[6]);
+        float xmax = max(out[5], out[3]);
+        float ymax = max(out[6], out[4]);
         int x1 = static_cast<int>(xmin * srcImg.cols);
         int y1 = static_cast<int>(ymin * srcImg.rows);
         int x2 = static_cast<int>(xmax * srcImg.cols);
         int y2 = static_cast<int>(ymax * srcImg.rows);
+        std::cout << "xz=" << xz << ", class=" << klass << ", confidence=" << confd << "\n"
+            << "  bbox: " << xmin << ", " << ymin << ", " << xmax << ", " << ymax << "\n"
+            << " image: " << srcImg.cols << " x " << srcImg.rows << "\n"
+            << "  draw: " << x1 << ", " << y1 << ", " << x2 << ", " << y2 << "\n"
+            << "expect: " << 222. << ", " << 182. << ", " << 252. << ", " << 191.
+            << std::endl;
         cv::rectangle(srcImg,cv::Rect2f(cv::Point(x1,y1),cv::Point(x2,y2)),cv::Scalar(255,0,255),1);
 
     }
