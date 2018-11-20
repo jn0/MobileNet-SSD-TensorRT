@@ -1,4 +1,11 @@
 # MobileNet-SSD-TensorRT
+
+- tuned to use different models/weights/images (in [main.cpp](main.cpp))
+- `pluginImplement.*` changed to `#include` some generated stuff
+- generated stuff follows [the repo](https://github.com/chuanqi305/MobileNet-SSD)
+
+## Original README follows
+
 **To accelerate mobileNet-ssd with tensorRT**
 
 **TensorRT-Mobilenet-SSD can run 50fps on jetson tx2**
