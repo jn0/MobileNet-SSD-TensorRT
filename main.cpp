@@ -1,6 +1,7 @@
 #include "common.h"
 #include "cudaUtility.h"
 #include "mathFunctions.h"
+#undef CHECK
 #include "pluginImplement.h"
 #include "tensorNet.h"
 #include "loadImage.h"
@@ -9,6 +10,7 @@
 
 const char* model  = "../../model/MobileNetSSD_deploy_iplugin.prototxt";
 const char* weight = "../../model/MobileNetSSD_deploy.caffemodel";
+const char* image = "../../testPic/test.jpg";
 
 const char* INPUT_BLOB_NAME = "data";
 
@@ -82,8 +84,37 @@ void loadImg( cv::Mat &input, int re_width, int re_height, float *data_unifrom,c
     }
 }
 
+static char HELP[] = " [-h|--help] [--weight WEIGHT.caffemodel] [--model MODEL.prototxt] [--image IMAGE]";
+
+#define ARG_IS(i,s) (strncmp(argv[1], (s), sizeof(s)) == 0)
+
+static void jno_setup(int argc, char *argv[])
+{
+    for (int i = 1; i < argc; i++) {
+        if (ARG_IS(i, "-h") || ARG_IS(i, "--help")) {
+            std::cout << basename(argv[0]) << HELP << std::endl;
+            exit(EXIT_SUCCESS);
+        } else if (ARG_IS(i, "--image")) {
+            image = realpath(argv[++i], nullptr);
+            std::cerr << "Image: " << image << std::endl;
+        } else if (ARG_IS(i, "--model")) {
+            model = realpath(argv[++i], nullptr);
+            std::cerr << "Model: " << model << std::endl;
+        } else if (ARG_IS(i, "--weight")) {
+            weight = realpath(argv[++i], nullptr);
+            std::cerr << "Weight: " << weight << std::endl;
+        } else {
+            std::cerr << "Bad fag '" << argv[i] << "'." << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+    char *p = strrchr(argv[0], '/'); *p = '\0'; chdir(argv[0]);
+}
+
 int main(int argc, char *argv[])
 {
+    jno_setup(argc, argv);
+
     std::vector<std::string> output_vector = {OUTPUT_BLOB_NAME};
     TensorNet tensorNet;
     tensorNet.LoadNetwork(model,weight,INPUT_BLOB_NAME, output_vector,BATCH_SIZE);
@@ -104,9 +135,7 @@ int main(int argc, char *argv[])
     void* imgCUDA;
     Timer timer;
 
-    std::string imgFile = "../../testPic/test.jpg";
-
-    frame = cv::imread(imgFile);
+    frame = cv::imread(image);
     srcImg = frame.clone();
     cv::resize(frame, frame, cv::Size(300,300));
     const size_t size = width * height * sizeof(float3);
@@ -142,7 +171,9 @@ int main(int argc, char *argv[])
         float ymin = output[7*k + 4];
         float xmax = output[7*k + 5];
         float ymax = output[7*k + 6];
-        std::cout << classIndex << " , " << confidence << " , "  << xmin << " , " << ymin<< " , " << xmax<< " , " << ymax << std::endl;
+        std::cout << classIndex << ", " << confidence << "; "
+            << xmin << ", " << ymin<< ", " << xmax<< ", " << ymax
+            << std::endl;
         int x1 = static_cast<int>(xmin * srcImg.cols);
         int y1 = static_cast<int>(ymin * srcImg.rows);
         int x2 = static_cast<int>(xmax * srcImg.cols);
@@ -159,3 +190,5 @@ int main(int argc, char *argv[])
     tensorNet.destroy();
     return 0;
 }
+
+// vim: ai et ts=4 sts=4 sw=4
